@@ -25,4 +25,4 @@ Tasks:
 
 
 Notes:
-Nathan - 12/27 Hopefully fixed the database now, split it into 3 different ones for home_value, market_length/price_drop, and selling_price. Still need more cleaning up but I believe I had the correct DBs
+Nathan - 12/27 Hopefully fixed the database now, split it into 3 different ones for home_value, market_length/price_drop, and selling_price. Still need more cleaning up but I believe I had the correct DBs - 01/02 Cleaned up each csv file but primarily focusing on home_value then selling_price once we get a working product. Database completed? but more work needs to be addressed.

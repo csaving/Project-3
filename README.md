@@ -18,7 +18,11 @@ https://www.zillow.com/research/data/
 
 Tasks:
 - Molly: flask app
-- Nathan: mongo DB and data cleaning
+- Nathan: mongo DB and data cleaning (use one mongoDB but have 3 "collections" for each series I want to plot)
 - Sean: Map
 - Cynthia: Line graph and git hub
 - Shunjia: bar chart
+
+
+Notes:
+Nathan - 12/27 Hopefully fixed the database now, split it into 3 different ones for home_value, market_length/price_drop, and selling_price. Still need more cleaning up but I believe I had the correct DBs

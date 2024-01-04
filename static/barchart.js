@@ -12,27 +12,53 @@ function getPlots(id) {
 function plotChartJs(id, columnNames, columnData) {
     const ctx = document.getElementById(id).getContext('2d');
     
-    const myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: columnNames,
-            datasets: [{
-                label: 'Data for 2023-11-30',
-                data: columnData,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar color
-                borderColor: 'rgba(75, 192, 192, 1)', // Border color
-                borderWidth: 1 // Border width
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
+    // Find column indices for RegionName and 2023-11-30
+    const regionNameIndex = headers.indexOf('RegionName');
+    const valueIndex = headers.indexOf('2023-11-30');
+
+    // Extract and parse data
+    const data = rows.slice(1).map(row => {
+      const values = row.split(',');
+      return {
+        regionName: values[regionNameIndex],
+        value: parseFloat(values[valueIndex])
+      };
     });
-}
+
+    // Sort data in descending order based on home values
+    data.sort((a, b) => b.value - a.value);
+
+    // Select the top 20 cities
+    const top20Cities = data.slice(0, 20);
+
+    // Extract city names and values
+    const cityNames = top20Cities.map(city => city.regionName);
+    const homeValues = top20Cities.map(city => city.value);
+
+    // Use Charts library to create a bar chart
+    const ctx = document.getElementById('chartJsCanvas').getContext('2d');
+    
+    const myChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: cityNames,
+        datasets: [{
+          label: 'Home Values on 2023-11-30',
+          data: homeValues,
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  })
 
 // ApexCharts
 function plotApexCharts(data) {

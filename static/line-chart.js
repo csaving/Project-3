@@ -25,7 +25,7 @@ function optionChanged(state) {
 
 function lineChart1 (state) {
   // Get json data from url 
-  let url = "../Data/clean_home_value_test.csv";
+  let url = "../Data/clean_home_value_test2.csv";
 
   d3.csv(url).then(function(data) {
     console.log(data);  
@@ -33,7 +33,7 @@ function lineChart1 (state) {
     let filterState = data.filter(regions => regions.StateName == state)
     let sortedBySizeRank = filterState.sort((a, b) => a.SizeRank - b.SizeRank);
     console.log(sortedBySizeRank)
-    sliced = sortedBySizeRank.slice(0,10)
+    sliced = sortedBySizeRank.slice(0,8)
     console.log(sliced)
     console.log(sliced.length)
     let numCities = sliced.length
@@ -46,7 +46,7 @@ function lineChart1 (state) {
       for (let i = 0; i < numCities; i++) {
         
         let city = sliced[i].RegionName;
-        let homeValues = [Math.round(sliced[i].Jan2009), 
+        let homeValues = [Math.round(sliced[i]['2009-01']), 
                           Math.round(sliced[i].Jan2010),
                           Math.round(sliced[i].Jan2011),
                           Math.round(sliced[i].Jan2012),

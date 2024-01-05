@@ -1,1 +1,25 @@
-hello world
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>How Does Your Favorite Genre Stack Up?</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+    />
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  
+  </head>
+  <body>
+    <select id="selDataset" onchange="optionChanged(this.value)">
+      <option value="AL">AL</option>
+      <option value="AK">AK</option>
+    </select>
+
+
+    <script src="../static/js/plot.js"></script>
+  </body>
+</html>

@@ -6,6 +6,9 @@ function getPlots(id) {
     d3.json(url).then(sampledata => {
         
 
+    })
+    
+    };
 
 
 // Chart.js
@@ -58,7 +61,7 @@ function plotChartJs(id, columnNames, columnData) {
         }
       }
     });
-  })
+  };
 
 // ApexCharts
 function plotApexCharts(data) {

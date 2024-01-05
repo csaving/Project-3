@@ -7,7 +7,7 @@ function init() {
 
     // Need to change dropdown to Map
     let dropdownMenu = d3.select("#selDataset");
-    let states = ['IL', 'IN', 'WI', 'CA', 'AK', 'WY', 'NY', 'AL']
+    let states = ['IL', 'IN', 'WI', 'CA', 'AK', 'WY', 'NY', 'AL', 'WA', 'AZ']
     states.forEach(nameId => {dropdownMenu.append("option").text(nameId).property("value")})
 
     // Call function to initialize charts
@@ -25,7 +25,7 @@ function optionChanged(state) {
 
 function lineChart1 (state) {
   // Get json data from url 
-  let url = "../Data/clean_home_value_test2.csv";
+  let url = "../Data/clean_home_value_test.csv";
 
   d3.csv(url).then(function(data) {
     console.log(data);  
@@ -46,7 +46,7 @@ function lineChart1 (state) {
       for (let i = 0; i < numCities; i++) {
         
         let city = sliced[i].RegionName;
-        let homeValues = [Math.round(sliced[i]['2009-01']), 
+        let homeValues = [Math.round(sliced[i].Jan2009), 
                           Math.round(sliced[i].Jan2010),
                           Math.round(sliced[i].Jan2011),
                           Math.round(sliced[i].Jan2012),

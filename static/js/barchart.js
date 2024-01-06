@@ -1,26 +1,17 @@
 // Use the D3 library to read in samples.json
 console.log("running")
 
-function getPlots(id) {
-    // Read samples.json
-    d3.json(url).then(sampledata => {
-        
-
-    })
-    
-    };
-
 
 // Chart.js
-function plotChartJs(id, columnNames, columnData) {
-  const ctx = document.getElementById(id);
+function plotChartJs(id, columnData,columnNames) {
+  const ctx = document.getElementById(id).getContext('2d');
     
-    new Chart(ctx, {
+  var myChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: columnNames,
             datasets: [{
-                label: 'Data for 2023-11-30',
+                label: 'Data for 2023 Nov',
                 data: columnData,
                 backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar color
                 borderColor: 'rgba(75, 192, 192, 1)', // Border color
@@ -30,86 +21,97 @@ function plotChartJs(id, columnNames, columnData) {
         options: {
             scales: {
                 y: {
-                    beginAtZero: true
+                  type: 'linear', // For horizontal axis
+                  position: 'bottom'
+                },
+                x: {
+                  type: 'category', // For vertical axis
+                  position: 'left'
                 }
-            }
+              }
         }
     });
-    // const ctx = document.getElementById(id).getContext('2d');
-    
-    // // Find column indices for RegionName and 2023-11-30
-    // const regionNameIndex = headers.indexOf('RegionName');
-    // const valueIndex = headers.indexOf('2023-11-30');
-
-    // // Extract and parse data
-    // const data = rows.slice(1).map(row => {
-    //   const values = row.split(',');
-    //   return {
-    //     regionName: values[regionNameIndex],
-    //     value: parseFloat(values[valueIndex])
-    //   };
-    // });
-
-    // // Sort data in descending order based on home values
-    // data.sort((a, b) => b.value - a.value);
-
-    // // Select the top 20 cities
-    // const top20Cities = data.slice(0, 20);
-
-    // // Extract city names and values
-    // const cityNames = top20Cities.map(city => city.regionName);
-    // const homeValues = top20Cities.map(city => city.value);
-
-    // // Use Charts library to create a bar chart
-    // let ctx = document.getElementById('chartJsCanvas');
-    
-    // const myChart = new Chart(ctx, {
-    //   type: 'bar',
-    //   data: {
-    //     labels: cityNames,
-    //     datasets: [{
-    //       label: 'Home Values on 2023-11-30',
-    //       data: homeValues,
-    //       backgroundColor: 'rgba(75, 192, 192, 0.2)',
-    //       borderColor: 'rgba(75, 192, 192, 1)',
-    //       borderWidth: 1
-    //     }]
-    //   },
-    //   options: {
-    //     scales: {
-    //       y: {
-    //         beginAtZero: true
-    //       }
-    //     }
-    //   }
-    // });
   };
 
 // ApexCharts
 function plotApexCharts(data) {
+ // Function to select specific columns and create a new dataset
+  const selectColumns = (data, columns) => {
+    return data.map(obj => {
+      const newObj = {};
+      columns.forEach(column => {
+        newObj[column] = obj[column];
+      });
+      return newObj;
+    });
+  };
+  
+  // Specify the columns you want to select
+  const selectedColumns = ['Jan2023','Feb2023','Mar2023','April2023','May2023','June2023','July2023','Aug2023','Sep2023','Oct2023','Nov2023'];
+  const Data2023 = selectColumns(data, selectedColumns);
+
+  // Function to calculate the sum of values for each object
+  const calculateSum = obj => Object.values(obj).reduce((acc, val) => acc + val, 0);
+  Sum2023 = calculateSum(Data2023)
+  // Function to add a new column to each object
+  const addNewColumn = (data, columnName, columnValue) => {
+    return data.map(obj => {
+      return { ...obj, [columnName]: columnValue };
+    });
+  };
+  
+  // Add a new column named 'NewColumn' with value 100 to each object
+  const newData = addNewColumn(data, 'Sum2023', Sum2023);
+
+
+  // Sort the data based on the sum of values
+  const sortedData = newData.sort((a, b) => b.Sum2023 - a.Sum2023);
+  let topRows = sortedData.slice(0,5);
+
   var barChart = new ApexCharts(document.querySelector("#barChart"), {
     chart: {
         type: 'line',
         height: 350
     },
-    series: [{
-        name: 'sales',
-        data: [30,40,35,50,49,60,70,91,125]
-    }],
+    series: [
+        {
+        name: topRows[0].RegionName,
+        data: [topRows[0].Jan2023,topRows[0].Feb2023,topRows[0].Mar2023,topRows[0].April2023,topRows[0].May2023,topRows[0].June2023,topRows[0].July2023,topRows[0].Aug2023,topRows[0].Sep2023,topRows[0].Oct2023,topRows[0].Nov2023]
+        },
+        {
+        name: topRows[1].RegionName,
+        data: [topRows[1].Jan2023,topRows[1].Feb2023,topRows[1].Mar2023,topRows[1].April2023,topRows[1].May2023,topRows[1].June2023,topRows[1].July2023,topRows[1].Aug2023,topRows[1].Sep2023,topRows[1].Oct2023,topRows[1].Nov2023]
+        },
+        {
+        name: topRows[2].RegionName,
+        data: [topRows[2].Jan2023,topRows[2].Feb2023,topRows[2].Mar2023,topRows[2].April2023,topRows[2].May2023,topRows[2].June2023,topRows[2].July2023,topRows[2].Aug2023,topRows[2].Sep2023,topRows[2].Oct2023,topRows[2].Nov2023]
+        },
+        {
+        name: topRows[3].RegionName,
+        data: [topRows[3].Jan2023,topRows[3].Feb2023,topRows[3].Mar2023,topRows[3].April2023,topRows[3].May2023,topRows[3].June2023,topRows[3].July2023,topRows[3].Aug2023,topRows[3].Sep2023,topRows[3].Oct2023,topRows[3].Nov2023]
+        },
+        {
+        name: topRows[4].RegionName,
+        data: [topRows[4].Jan2023,topRows[4].Feb2023,topRows[4].Mar2023,topRows[4].April2023,topRows[4].May2023,topRows[4].June2023,topRows[4].July2023,topRows[4].Aug2023,topRows[4].Sep2023,topRows[4].Oct2023,topRows[4].Nov2023]
+        },
+    
+    
+    ],
     xaxis: {
-        categories: [1991,1992,1993,1994,1995,1996,1997, 1998,1999],
+        categories: ['Jan','Feb','March','April','May','June','July','Aug','Sept','Oct','Nov'],
         title: {
             text:'Years'
         }
     },
     title: {
-        text: 'Top 9 Cities - Home Values in 2023'
+        text: 'Top 5 Cities - Home Values in 2023'
     },
     yaxis: {
         title: {
             text: 'Home Values'
         }
     }
+    
 });
 
 barChart.render();
@@ -159,18 +161,23 @@ barChart.render();
 
 // Read samples.json and plot charts
 
-d3.json(("/api/test/data")).then(sampledata => {
-  d3.csv("./static/data/clean_home_value.csv").then(data => {
+//d3.json(("/api/test/data")).then(sampledata => {
+d3.csv("./static/data/clean_home_value_test.csv").then(data => {
 
  
     console.log("csv_data ", data);
+    let sortedByNov2023 = data.sort((a,b) => b.Nov2023 - a.Nov2023);
+    let topRows = sortedByNov2023.slice(0,10);
     // Assuming you have the necessary data for Chart.js
-    let chartJsColumnNames = ["Label1", "Label2", "Label3"]; // Replace with your actual data
-    let chartJsColumnData = [10, 20, 30]; // Replace with your actual data
-    plotChartJs("chartJsCanvas", chartJsColumnNames, chartJsColumnData);
 
-    // Assuming you have the necessary data for ApexCharts
-    let apexChartData = sampledata; // Replace with your actual data
+
+    const chartJsColumnNames = topRows.map(row => row.RegionName); // Replace with your actual data
+    const chartJsColumnData =  topRows.map(row => Math.round(Number(row.Nov2023))); // Replace with your actual data
+    plotChartJs("chartJsCanvas", chartJsColumnData, chartJsColumnNames);
+
+    
+ 
+    let apexChartData = data; // Replace with your actual data
     plotApexCharts(apexChartData);
-  })
-});
+    
+  });

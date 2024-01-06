@@ -279,7 +279,7 @@ function init() {
 
   // Call function to initialize charts 
   lineChart1('IL')
-  barChart('IL')
+  barChart()
 }; 
 
 // Function to handle marker click
@@ -288,13 +288,12 @@ function onMarkerClick(e) {
   const markerValue = e.target.value;
   console.log(markerValue)
   lineChart1(markerValue)
-  barChart(markerValue)
 }
 
 function lineChart1 (state) {
   // Get json data from url 
-  const url = `/api/v1.0/barchart/` + state;
-  // console.log(url)
+  const url = `/api/v1.0/linechart/` + state;
+  console.log(url)
   d3.json(url).then(function(data) {
     // console.log(data);  
 
@@ -362,11 +361,11 @@ function lineChart1 (state) {
 }
 
 // Function to create charts for top cities 
-function barChart (state) {
+function barChart () {
   //d3.json(("/api/test/data")).then(sampledata => {
   // d3.csv("./static/data/clean_home_value_test.csv").then(data => {
   // Get json data from url 
-  const url = `/api/v1.0/barchart/` + state;
+  const url = `/api/v1.0/barchart`;
   console.log(url)
   d3.json(url).then(function(data) {
     console.log("bar chart", data);
@@ -377,8 +376,8 @@ function barChart (state) {
     const chartJsColumnData =  topRows.map(row => Math.round(Number(row['2023-11-30']))); 
     plotChartJs("chartJsCanvas", chartJsColumnData, chartJsColumnNames);
 
-    // let apexChartData = data; 
-    // plotApexCharts(apexChartData);
+    let apexChartData = data; 
+    plotApexCharts(apexChartData);
     
   });
 }
@@ -399,7 +398,13 @@ function plotChartJs(id, columnData,columnNames) {
             }]
         },
         options: {
-            scales: {
+          plugins: {
+            title: {
+                display: true,
+                text: 'Top Ten Cities for Nov 2023'
+            }
+          },
+          scales: {
                 y: {
                   type: 'linear', // For horizontal axis
                   position: 'bottom'
@@ -408,90 +413,90 @@ function plotChartJs(id, columnData,columnNames) {
                   type: 'category', // For vertical axis
                   position: 'left'
                 }
-              }
+          }
         }
     });
 };
 
-//   // ApexCharts
-// function plotApexCharts(data) {
-//   // Function to select specific columns and create a new dataset
-//    const selectColumns = (data, columns) => {
-//      return data.map(obj => {
-//        const newObj = {};
-//        columns.forEach(column => {
-//          newObj[column] = obj[column];
-//        });
-//        return newObj;
-//      });
-//    };
+  // ApexCharts
+function plotApexCharts(data) {
+  console.log('apex chart')
+  // Function to select specific columns and create a new dataset
+   const selectColumns = (data, columns) => {
+     return data.map(obj => {
+       const newObj = {};
+       columns.forEach(column => {
+         newObj[column] = obj[column];
+       });
+       return newObj;
+     });
+   };
    
-//    // Specify the columns you want to select
-//    const selectedColumns = ['Jan2023','Feb2023','Mar2023','April2023','May2023','June2023','July2023','Aug2023','Sep2023','Oct2023','Nov2023'];
-//    const Data2023 = selectColumns(data, selectedColumns);
+   // Specify the columns you want to select
+   const selectedColumns = ['Jan2023','Feb2023','Mar2023','April2023','May2023','June2023','July2023','Aug2023','Sep2023','Oct2023','Nov2023'];
+   const Data2023 = selectColumns(data, selectedColumns);
  
-//    // Function to calculate the sum of values for each object
-//    const calculateSum = obj => Object.values(obj).reduce((acc, val) => acc + val, 0);
-//    Sum2023 = calculateSum(Data2023)
-//    // Function to add a new column to each object
-//    const addNewColumn = (data, columnName, columnValue) => {
-//      return data.map(obj => {
-//        return { ...obj, [columnName]: columnValue };
-//      });
-//    };
+   // Function to calculate the sum of values for each object
+   const calculateSum = obj => Object.values(obj).reduce((acc, val) => acc + val, 0);
+   Sum2023 = calculateSum(Data2023)
+   // Function to add a new column to each object
+   const addNewColumn = (data, columnName, columnValue) => {
+     return data.map(obj => {
+       return { ...obj, [columnName]: columnValue };
+     });
+   };
    
-//    // Add a new column named 'NewColumn' with value 100 to each object
-//    const newData = addNewColumn(data, 'Sum2023', Sum2023);
+   // Add a new column named 'NewColumn' with value 100 to each object
+   const newData = addNewColumn(data, 'Sum2023', Sum2023);
  
-//    // Sort the data based on the sum of values
-//    const sortedData = newData.sort((a, b) => b.Sum2023 - a.Sum2023);
-//    let topRows = sortedData.slice(0,5);
+   // Sort the data based on the sum of values
+   const sortedData = newData.sort((a, b) => b.Sum2023 - a.Sum2023);
+   let topRows = sortedData.slice(0,5);
  
-//    var barChart = new ApexCharts(document.querySelector("#barChart"), {
-//      chart: {
-//          type: 'line',
-//          height: 350
-//      },
-//      series: [
-//          {
-//          name: topRows[0].RegionName,
-//          data: [topRows[0].Jan2023,topRows[0].Feb2023,topRows[0].Mar2023,topRows[0].April2023,topRows[0].May2023,topRows[0].June2023,topRows[0].July2023,topRows[0].Aug2023,topRows[0].Sep2023,topRows[0].Oct2023,topRows[0].Nov2023]
-//          },
-//          {
-//          name: topRows[1].RegionName,
-//          data: [topRows[1].Jan2023,topRows[1].Feb2023,topRows[1].Mar2023,topRows[1].April2023,topRows[1].May2023,topRows[1].June2023,topRows[1].July2023,topRows[1].Aug2023,topRows[1].Sep2023,topRows[1].Oct2023,topRows[1].Nov2023]
-//          },
-//          {
-//          name: topRows[2].RegionName,
-//          data: [topRows[2].Jan2023,topRows[2].Feb2023,topRows[2].Mar2023,topRows[2].April2023,topRows[2].May2023,topRows[2].June2023,topRows[2].July2023,topRows[2].Aug2023,topRows[2].Sep2023,topRows[2].Oct2023,topRows[2].Nov2023]
-//          },
-//          {
-//          name: topRows[3].RegionName,
-//          data: [topRows[3].Jan2023,topRows[3].Feb2023,topRows[3].Mar2023,topRows[3].April2023,topRows[3].May2023,topRows[3].June2023,topRows[3].July2023,topRows[3].Aug2023,topRows[3].Sep2023,topRows[3].Oct2023,topRows[3].Nov2023]
-//          },
-//          {
-//          name: topRows[4].RegionName,
-//          data: [topRows[4].Jan2023,topRows[4].Feb2023,topRows[4].Mar2023,topRows[4].April2023,topRows[4].May2023,topRows[4].June2023,topRows[4].July2023,topRows[4].Aug2023,topRows[4].Sep2023,topRows[4].Oct2023,topRows[4].Nov2023]
-//          },
-       
-//      ],
-//      xaxis: {
-//          categories: ['Jan','Feb','March','April','May','June','July','Aug','Sept','Oct','Nov'],
-//          title: {
-//              text:'Years'
-//          }
-//      },
-//      title: {
-//          text: 'Top 5 Cities - Home Values in 2023'
-//      },
-//      yaxis: {
-//          title: {
-//              text: 'Home Values'
-//          }
-//      }
-     
-//  });
-// }
+   var barChart = new ApexCharts(document.querySelector("#barChart"), {
+     chart: {
+         type: 'line',
+         height: 350
+     },
+     series: [
+         {
+         name: topRows[0].RegionName,
+         data: [topRows[0]['2023-01-31'],topRows[0]['2023-02-28'],topRows[0]['2023-03-31'],topRows[0]['2023-04-30'],topRows[0]['2023-05-31'],topRows[0]['2023-06-30'],topRows[0]['2023-07-31'],topRows[0]['2023-08-31'],topRows[0]['2023-09-30'],topRows[0]['2023-10-31'],topRows[0]['2023-11-30']]
+         },
+         {
+         name: topRows[1].RegionName,
+         data: [topRows[1]['2023-01-31'],topRows[1]['2023-02-28'],topRows[1]['2023-03-31'],topRows[1]['2023-04-30'],topRows[1]['2023-05-31'],topRows[1]['2023-06-30'],topRows[1]['2023-07-31'],topRows[1]['2023-08-31'],topRows[1]['2023-09-30'],topRows[1]['2023-10-31'],topRows[1]['2023-11-30']]
+         },
+         {
+         name: topRows[2].RegionName,
+         data: [topRows[2]['2023-01-31'],topRows[2]['2023-02-28'],topRows[2]['2023-03-31'],topRows[2]['2023-04-30'],topRows[2]['2023-05-31'],topRows[2]['2023-06-30'],topRows[2]['2023-07-31'],topRows[2]['2023-08-31'],topRows[2]['2023-09-30'],topRows[2]['2023-10-31'],topRows[2]['2023-11-30']]
+         },
+         {
+         name: topRows[3].RegionName,
+         data: [topRows[3]['2023-01-31'],topRows[3]['2023-02-28'],topRows[3]['2023-03-31'],topRows[3]['2023-04-30'],topRows[3]['2023-05-31'],topRows[3]['2023-06-30'],topRows[3]['2023-07-31'],topRows[3]['2023-08-31'],topRows[3]['2023-09-30'],topRows[3]['2023-10-31'],topRows[3]['2023-11-30']]
+         },
+         {
+         name: topRows[4].RegionName,
+         data: [topRows[4]['2023-01-31'],topRows[4]['2023-02-28'],topRows[4]['2023-03-31'],topRows[4]['2023-04-30'],topRows[4]['2023-05-31'],topRows[4]['2023-06-30'],topRows[4]['2023-07-31'],topRows[4]['2023-08-31'],topRows[4]['2023-09-30'],topRows[4]['2023-10-31'],topRows[4]['2023-11-30']]
+         },
+     ],
+     xaxis: {
+         categories: ['Jan','Feb','March','April','May','June','July','Aug','Sept','Oct','Nov'],
+         title: {
+             text:'Years'
+         }
+     },
+     title: {
+         text: 'Top 5 Cities - Home Values in 2023'
+     },
+     yaxis: {
+         title: {
+             text: 'Home Values'
+         }
+     }    
+ });
+ barChart.render();
+}
 
 //Calling the init function
 init();

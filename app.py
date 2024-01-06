@@ -13,8 +13,8 @@ hv = db['home_values']
 def welcome():
     return render_template("index.html")
 
-@app.route("/api/v1.0/barchart/<state_name>")
-def barchart(state_name): 
+@app.route("/api/v1.0/linechart/<state_name>")
+def linechart(state_name): 
     client = MongoClient(port=27017)
     db = client['us_housing'] 
     hv = db['home_values']  
@@ -24,6 +24,22 @@ def barchart(state_name):
 
     # Perform the find operation with field exclusion
     results = hv.find(query, projection)
+
+    all_values = []
+
+    for record in results:
+        all_values.append(record)
+
+    return jsonify(all_values)
+
+@app.route("/api/v1.0/barchart")
+def barchart(): 
+    client = MongoClient(port=27017)
+    db = client['us_housing'] 
+    hv = db['home_values']  
+
+    # Perform the find operation with field exclusion
+    results = hv.find({}, {"_id": False})
 
     all_values = []
 

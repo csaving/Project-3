@@ -7,7 +7,7 @@ let myMap = L.map("map", {
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(myMap);
-  // An array containing each city's name, location, and population
+  // An array containing each state abbreviation, latitude and longitude
   let states = [
     {
       "state":"AK",
@@ -264,17 +264,11 @@ let myMap = L.map("map", {
 
 // Function to initialize data
 function init() {
-  // const url = `/api/v1.0/barchart/IL`;
-  // d3.json(url).then(data => {
-  //   console.log(data)
-  //   })
-
   // Add markers to the map
   states.forEach(state => {
     const newMarker = L.marker([state.latitude, state.longitude])
       .bindPopup(`<h1>${state.state}</h1>`)
       .addTo(myMap);
-
     // Attach the value to the marker for later access
     newMarker.value = state.state;
     // Add a click event listener to the marker
@@ -283,8 +277,9 @@ function init() {
     newMarker.on('click', onMarkerClick);
   });
 
-  // Call function to initialize charts
+  // Call function to initialize charts 
   lineChart1('IL')
+  barChart()
 }; 
 
 // Function to handle marker click
@@ -293,24 +288,21 @@ function onMarkerClick(e) {
   const markerValue = e.target.value;
   console.log(markerValue)
   lineChart1(markerValue)
-  barChart(markerValue)
 }
 
 function lineChart1 (state) {
-  // d3.csv('../clean_home_value.csv').then(data => {
-
   // Get json data from url 
-  const url = `/api/v1.0/barchart/` + state;
+  const url = `/api/v1.0/linechart/` + state;
   console.log(url)
   d3.json(url).then(function(data) {
     // console.log(data);  
 
-    // let filterState = data.filter(regions => regions.StateName == state)
+    // Sort cities by size and limit to top 8 
     let sorted = data.sort((a, b) => a.SizeRank - b.SizeRank);
     let sliced = sorted.slice(0,8)
     // console.log(sliced)
     let numCities = sliced.length
-
+    // Set months to use on x-axis
     let months = ['2009-01', '2010-01', '2011-01', '2012-01', '2013-01', '2014-01', 
                   '2015-01', '2016-01', '2017-01', '2018-01', '2019-01', '2020-01', 
                   '2021-01', '2022-01', '2023-01', '2023-11']
@@ -318,6 +310,7 @@ function lineChart1 (state) {
     let cityValues = []
     for (let i = 0; i < numCities; i++) {      
       let city = sliced[i].RegionName;
+      // Get home values for January of each year from 2009, plus November 2023
       let homeValues = [Math.round(sliced[i]['2009-01-31']), 
                         Math.round(sliced[i]['2010-01-31']),
                         Math.round(sliced[i]['2011-01-31']),
@@ -341,6 +334,8 @@ function lineChart1 (state) {
       cityValues.push(homeValues)
     }
 
+    // Create data for line chart for each city. 
+    // Need to do with for loop because some states have less than 8 cities.
     let lineData = []
     for (let i = 0; i < numCities; i++) {
       lineData.push({
@@ -350,7 +345,6 @@ function lineChart1 (state) {
         name: cities[i]
       });
     }
-    // console.log(lineData)
 
     var layout = {
       title: 'Mean Home Prices in ' + state,
@@ -359,7 +353,6 @@ function lineChart1 (state) {
       },
       yaxis: {
         title: 'Home Prices'
-        // range: [0, 1500000]
       }
     };  
 
@@ -367,8 +360,142 @@ function lineChart1 (state) {
   })
 }
 
-// Add code for bar chart here
-function barChart (state) {
+// Function to create charts for top cities 
+function barChart () {
+  //d3.json(("/api/test/data")).then(sampledata => {
+  // d3.csv("./static/data/clean_home_value_test.csv").then(data => {
+  // Get json data from url 
+  const url = `/api/v1.0/barchart`;
+  console.log(url)
+  d3.json(url).then(function(data) {
+    console.log("bar chart", data);
+    let sortedByNov2023 = data.sort((a,b) => b['2023-11-30'] - a['2023-11-30']);
+    let topRows = sortedByNov2023.slice(0,10);
+    console.log("top rows:", topRows)
+    const chartJsColumnNames = topRows.map(row => row.RegionName); 
+    const chartJsColumnData =  topRows.map(row => Math.round(Number(row['2023-11-30']))); 
+    plotChartJs("chartJsCanvas", chartJsColumnData, chartJsColumnNames);
+
+    let apexChartData = data; 
+    plotApexCharts(apexChartData);
+    
+  });
+}
+
+function plotChartJs(id, columnData,columnNames) {
+  const ctx = document.getElementById(id).getContext('2d');
+    
+  var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: columnNames,
+            datasets: [{
+                label: 'Data for 2023 Nov',
+                data: columnData,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)', // Bar color
+                borderColor: 'rgba(75, 192, 192, 1)', // Border color
+                borderWidth: 1 // Border width
+            }]
+        },
+        options: {
+          plugins: {
+            title: {
+                display: true,
+                text: 'Top Ten Cities for Nov 2023'
+            }
+          },
+          scales: {
+                y: {
+                  type: 'linear', // For horizontal axis
+                  position: 'bottom'
+                },
+                x: {
+                  type: 'category', // For vertical axis
+                  position: 'left'
+                }
+          }
+        }
+    });
+};
+
+  // ApexCharts
+function plotApexCharts(data) {
+  console.log('apex chart')
+  // Function to select specific columns and create a new dataset
+   const selectColumns = (data, columns) => {
+     return data.map(obj => {
+       const newObj = {};
+       columns.forEach(column => {
+         newObj[column] = obj[column];
+       });
+       return newObj;
+     });
+   };
+   
+   // Specify the columns you want to select
+   const selectedColumns = ['Jan2023','Feb2023','Mar2023','April2023','May2023','June2023','July2023','Aug2023','Sep2023','Oct2023','Nov2023'];
+   const Data2023 = selectColumns(data, selectedColumns);
+ 
+   // Function to calculate the sum of values for each object
+   const calculateSum = obj => Object.values(obj).reduce((acc, val) => acc + val, 0);
+   Sum2023 = calculateSum(Data2023)
+   // Function to add a new column to each object
+   const addNewColumn = (data, columnName, columnValue) => {
+     return data.map(obj => {
+       return { ...obj, [columnName]: columnValue };
+     });
+   };
+   
+   // Add a new column named 'NewColumn' with value 100 to each object
+   const newData = addNewColumn(data, 'Sum2023', Sum2023);
+ 
+   // Sort the data based on the sum of values
+   const sortedData = newData.sort((a, b) => b.Sum2023 - a.Sum2023);
+   let topRows = sortedData.slice(0,5);
+ 
+   var barChart = new ApexCharts(document.querySelector("#barChart"), {
+     chart: {
+         type: 'line',
+         height: 350
+     },
+     series: [
+         {
+         name: topRows[0].RegionName,
+         data: [topRows[0]['2023-01-31'],topRows[0]['2023-02-28'],topRows[0]['2023-03-31'],topRows[0]['2023-04-30'],topRows[0]['2023-05-31'],topRows[0]['2023-06-30'],topRows[0]['2023-07-31'],topRows[0]['2023-08-31'],topRows[0]['2023-09-30'],topRows[0]['2023-10-31'],topRows[0]['2023-11-30']]
+         },
+         {
+         name: topRows[1].RegionName,
+         data: [topRows[1]['2023-01-31'],topRows[1]['2023-02-28'],topRows[1]['2023-03-31'],topRows[1]['2023-04-30'],topRows[1]['2023-05-31'],topRows[1]['2023-06-30'],topRows[1]['2023-07-31'],topRows[1]['2023-08-31'],topRows[1]['2023-09-30'],topRows[1]['2023-10-31'],topRows[1]['2023-11-30']]
+         },
+         {
+         name: topRows[2].RegionName,
+         data: [topRows[2]['2023-01-31'],topRows[2]['2023-02-28'],topRows[2]['2023-03-31'],topRows[2]['2023-04-30'],topRows[2]['2023-05-31'],topRows[2]['2023-06-30'],topRows[2]['2023-07-31'],topRows[2]['2023-08-31'],topRows[2]['2023-09-30'],topRows[2]['2023-10-31'],topRows[2]['2023-11-30']]
+         },
+         {
+         name: topRows[3].RegionName,
+         data: [topRows[3]['2023-01-31'],topRows[3]['2023-02-28'],topRows[3]['2023-03-31'],topRows[3]['2023-04-30'],topRows[3]['2023-05-31'],topRows[3]['2023-06-30'],topRows[3]['2023-07-31'],topRows[3]['2023-08-31'],topRows[3]['2023-09-30'],topRows[3]['2023-10-31'],topRows[3]['2023-11-30']]
+         },
+         {
+         name: topRows[4].RegionName,
+         data: [topRows[4]['2023-01-31'],topRows[4]['2023-02-28'],topRows[4]['2023-03-31'],topRows[4]['2023-04-30'],topRows[4]['2023-05-31'],topRows[4]['2023-06-30'],topRows[4]['2023-07-31'],topRows[4]['2023-08-31'],topRows[4]['2023-09-30'],topRows[4]['2023-10-31'],topRows[4]['2023-11-30']]
+         },
+     ],
+     xaxis: {
+         categories: ['Jan','Feb','March','April','May','June','July','Aug','Sept','Oct','Nov'],
+         title: {
+             text:'Years'
+         }
+     },
+     title: {
+         text: 'Top 5 Cities - Home Values in 2023'
+     },
+     yaxis: {
+         title: {
+             text: 'Home Values'
+         }
+     }    
+ });
+ barChart.render();
 }
 
 //Calling the init function

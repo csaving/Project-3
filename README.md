@@ -7,13 +7,13 @@
 
 ## Visualizations
 ## Chart 1 (Using Chart.js Bar Chart)
-![Alt text](top-10-cities.png)
+![Top Ten Cities value wise](images/top-10-cities.png)
 - **Chart Type:** Bar Chart 
 - **Data Displayed:** Home values of the top 10 cities as of 2023-11-30.
 - **Order:** The cities are displayed in descending order based on home values.
 - **Purpose:** This chart provides a clear visual representation of the home values for the top regions as of November 2023.
 ## Chart 2 (Using ApexCharts Line Chart)
-![Alt text](Top-5-cities.png)
+![Top Five Cities value wise](images/Top-5-cities.png)
 - **Chart Type:** Line Chart
 - **Data Displayed:** Home values of the top 5 cities throughout the months of 2023.
 - **Order:** The data is ordered chronologically to show home value trends.
@@ -33,12 +33,14 @@
 - Showcases home value trends of the top 5 cities for the year 2023.
 - The line graph elucidates the monthly progression and potential market predictions.
 - Aids in analyzing the market momentum and investment opportunities.
+![Wyomning example of line chart](images/WY-line-chart.png)
 
 ## Getting Started
 - To view the visualizations, simply open the HTML files in your browser:
 - chartjs-bar-chart.html for the bar chart visualization using Chart.js.
 - apexcharts-line-chart.html for the line chart visualization using ApexCharts.
 - Ensure that you have internet access while opening these files as the chart libraries may need to be fetched from a CDN.
+![Map example](images/WY-map.png)
 
 ## Contributing
 - Contributions to this project are welcome. To contribute:

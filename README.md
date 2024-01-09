@@ -2,8 +2,15 @@
 ## Overview
 - This project presents visualizations of home values across the United States using home value data as of November 2023. Utilizing Chart.js and ApexCharts, we illustrate both the current market snapshot and the trends over the past year.
 
+## Contributors
+- Cynthia Saving
+- Molly Delehant
+- Nathan Rosenberg
+- Sean Bell
+- Shunjia Liu
+
 ## Data Preparation
-- The dataset comprises home value information sorted as of November 2023. Initial visualizations are prepared for the top 10 cities by home value for a bar chart representation, and the top 5 cities for a line chart that tracks home value trends throughout the year.
+- The dataset comprises home value information sorted as of November 2023. Initial visualizations are prepared for the top 10 cities by home value for a bar chart representation, and the top 5 cities for a line chart that tracks home value trends throughout the year. Initial data contained over 22,000 rows for various states throughout the nation.
 
 ## Visualizations
 ## Chart 1 (Using Chart.js Bar Chart)
